@@ -18,12 +18,27 @@ How to write Go code [https://golang.org/doc/code.html](https://golang.org/doc/c
 
 ## Syntax
 
+### Common packages
+
+* [fmt](https://golang.org/pkg/fmt/) - formatting functions
+* [io](https://golang.org/pkg/) - basic interfaces to IO primitives
+
+
 ### Everyday
 
 	import "fmt"
 	fmt.Println()
-	fmt.Printf("%d\n", 1)
-	fmt.Printf("%v, %T\n", x, x) # print value and type
+	fmt.Printf(<format string>, <arg list>)
+	fmt.Sprintf(<format string>, <arg list>) # format string
+
+#### Formatting characters
+
+* %d - decimal
+* %v - value
+	* %+v - (structs) prints field names
+	* %#v - Go-syntax representation of value
+* %T - type
+* %q - a single-quoted character literal, safely escaped
 
 
 ### Types
@@ -189,21 +204,34 @@ an interface type is defined as a set of method signatures. A value of interface
 		fmt.Println(i)
 	}
 
-	type Bar interface {
+	type IBar interface {
 		Foo()
 	}
 
-	var b Bar = MyInt(4)  # there is a Foo method for MyInt receiver arg, so this
+	var b IBar = MyInt(4)  # there is a Foo method for MyInt receiver arg, so this
 	b.Foo()               # is compatible with the interface
 
 	var i interface {}   # the 'empty' interface. Can hold any values of any type (i.e. fmt.Print)
 
 
-CONTINUE: https://tour.golang.org/methods/15
+	# Type assertion - access an interfaces underlying concrete value
+	# t := i.(T) OR t, ok := i.(T)
+	t := i.(MyInt)
+
+	# Type switches
+	switch v := i.(type) {  # Not the keyword 'type' here
+	case T: // v has type T
+	... snip ...
+	}
 
 
 *NOTE*: it is important that all methods for a type implement either ALL value or ALL pointer receiver args as an interface matches the type as a whole.
 
+#### Common interfaces
+
+Some packages use very common interfaces
+
+* Stringer - used by `fmt` package and such for a type that can describe itself as a string
 
 
 ### Iteration
@@ -239,6 +267,24 @@ CONTINUE: https://tour.golang.org/methods/15
 	    default: ...
 	}
 
+
+### Errors
+
+	# Common error interface
+	type error interface {
+	    Error() string
+	}
+
+Functions will return an error value, that should be checked for !nil
+
+	if _, err := foo(); err != nil {
+		// error handling
+	}
+
+
+### Concurrency
+
+Continue from: https://tour.golang.org/concurrency/1
 
 
 ## Testing
