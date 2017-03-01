@@ -58,3 +58,8 @@ Installs packages to
 	go get github.com/golang/example/hello
 
 
+## Other Tools
+
+	godoc <pkg>
+	godoc <pkg> <function>
+	gofmt -s -w <file|glob>  # write simplified code back to file

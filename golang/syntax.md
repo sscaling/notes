@@ -284,7 +284,51 @@ Functions will return an error value, that should be checked for !nil
 
 ### Concurrency
 
-Continue from: https://tour.golang.org/concurrency/1
+#### Go routines
+
+a `goroutine` is a thread managed by the Go runtime.
+
+	go f(x)  # arguments are evaulated in current context
+	         # f() is evaluated in go routine
+
+	# inline goroutine
+	go func() {
+		# function body
+	}()
+
+
+#### Channels
+
+A typed conduit through which you send / receive values with channel operator `<-`.
+Channels send / receives block until the other side is ready.
+Unlike file resources, they do not need to close unless indicating no more data, such as value being used in a range loop.
+
+	ch := make(chan int)  # make an int channel
+	ch := make(chan int, 100) # buffered channel
+	close(ch)		# close the channel (only the Sender should do this)
+	ch <- v        	# Send v to channel ch.
+	v, ok := <-ch 	# Receive from ch, and
+                    # assign value to v.
+                    # ok is false if channel is closed
+
+	# use select to wait on multiple communications
+	func waiting(x, y chan int) {
+	    r := 0;
+		for {  # infinite loop
+			select {	# evaluate each case block
+				case x <- r:	# read event on x
+					r++
+				case <-y:		# write event on y
+					return
+				default:		# optional, if other cases are not ready
+								# perform some other action
+					time.Sleep(10 * time.Millsecond)
+			}
+		}
+	}
+
+
+Continue from: https://tour.golang.org/concurrency/7
 
 
 ## Testing
