@@ -327,8 +327,21 @@ Unlike file resources, they do not need to close unless indicating no more data,
 		}
 	}
 
+#### Locking
 
-Continue from: https://tour.golang.org/concurrency/7
+	sync.Mutex # Defines a mutex
+
+	type Counter struct {
+		ctr   int        # Is an int atomic anyway?
+		mux sync.Mutex
+	}
+
+	func Inc(c *Counter) {
+		c.mux.Lock()
+		defer c.mux.Unlock()
+		c.ctr++
+	}
+
 
 
 ## Testing
