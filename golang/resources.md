@@ -24,6 +24,8 @@
 
 Once installed, intelliJ will work with this nicely or can use directly from CLI. There is good documentation on the website on how to debug more complex packages.
 
+**NOTE** If using from intelliJ, must run as 'Go Application' type. Cannot debug 'Single Go file' etc.
+
 
 **Install:**
 
