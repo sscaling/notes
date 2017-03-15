@@ -303,7 +303,8 @@ A typed conduit through which you send / receive values with channel operator `<
 Channels send / receives block until the other side is ready.
 Unlike file resources, they do not need to close unless indicating no more data, such as value being used in a range loop.
 
-	ch := make(chan int)  # make an int channel
+	ch := make(<-chan int)  # make a receive-only int channel
+	ch := make(chan<- int)  # make a send-only int channel
 	ch := make(chan int, 100) # buffered channel
 	close(ch)		# close the channel (only the Sender should do this)
 	ch <- v        	# Send v to channel ch.
