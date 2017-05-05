@@ -344,6 +344,15 @@ Unlike file resources, they do not need to close unless indicating no more data,
 	}
 
 
+#### Syntatic sugar
+
+	const (
+		a int = iota
+		b int
+	)
+
+iota - start counting from 0 and all subsequent consts will have a sequential value. [https://github.com/golang/go/wiki/Iota](https://github.com/golang/go/wiki/Iota)
+
 
 ## Testing
 
