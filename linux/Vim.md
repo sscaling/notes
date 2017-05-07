@@ -73,3 +73,4 @@
 	:set ic       # ignore case (alias: ignorecase)
 	:set is       # increment search (alias: incsearch)
 
+	:set autowrite  # write contents of file automatically when :make is called
