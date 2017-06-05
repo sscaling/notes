@@ -41,7 +41,7 @@ AS              # Open alternative file in horizontal split
 AT              # Open alterantive file in new tab
 
 GoDecls+        # List type / func
-GoDeclsDir+     # Also list everything in this directory (pacakge)
+GoDeclsDir+     # Also list everything in this directory (package)
 ```
 
 -	Requires ctrlpvim/ctrlp.vim plugin

@@ -43,7 +43,8 @@ CTRL-O / CTRL-I # jumpt to older / newer position in jump list
 CTRL-W CTRL-W - jump between windows
 ```
 
-## Text Editing
+Text Editing
+------------
 
 ```
 R - replace mode. Overwrite text
@@ -64,6 +65,28 @@ p / P             # paste text after / before cursor
 
 :reg              # list registers
 "{char} p|y       # Use register for next paste / yank
+```
+
+Windows
+-------
+
+```
+:help windows-intro
+```
+
+-	buffer == file
+-	window is a viewport of a buffer
+-	tab collection of windows
+
+Uses CTRL-W followed by options to manipulate windows
+
+```
+:buff            # List buffers
+:bn / bp         # next / previous buffer
+:b <n>           # Switch to buffer <n>
+sp / new         # Split current / new buffer in a horizontal window
+vs / vnew        # as above in vertical window
+CTRL-W CTRL-O    # Make current window the only one on screen
 ```
 
 Code
