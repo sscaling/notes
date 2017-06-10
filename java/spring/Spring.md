@@ -66,7 +66,7 @@ General:
 -	@Required - [setter] - Must be provided at config time
 -	@Autowired - [ctor,setter,func,field] - Wire in dependencies (JSR-250 - @Inject). @Autowried(required=false) ignore missing.
 	-	Can be also used to wrie in well-known interfaces for resolvable dependencies. i.e. ApplicationContext, Environment etc.
--	@Primary - indicate a bean is given priorty when multiple are available.A
+-	@Primary - indicate a bean is given priorty when multiple are available.
 -	@Resource / @Qualifier - mark / select name based Beans
 -	@PostConstruct / @PreDestroy - lifecycle annotations (see Life cycles below)
 -	@Order -

@@ -30,3 +30,27 @@ Maven
 ```
 spring-boot:run goal
 ```
+
+Testing
+=======
+
+Annotation driven testing with Spring test-context framework. See summary in [SpringTesting.md](SpringTesting.md)
+
+[https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html).
+
+Some utilities can be found in `org.springframework.test.util`.
+
+Use `@SpringBootTest` annotation instead of `@ContextConfiguration`. This creates an ApplicationContext in a SpringApplication so you get all Logging, external properties and other SpringBoot features.
+
+`@SpringBootTest` will search up the package structure until it finds an `@SpringBootApplication` or `@SpringBootConfiguration` annotated class.
+
+Test config can be overriden by supplying an `@TestConfiguration` class.
+
+Random ports can be assigned by configuring `@SpringBootTest` and injected with `@LocalServerPort` or used by an `@Autowired` TestRestTemplate.:w
+
+`@MockBean` creates a Mockito instance of a Bean (or similary use `@SpyBean`).
+
+Integration testing
+-------------------
+
+Utilities in `org.springframework.test` will provide correct wiring of IoC.
