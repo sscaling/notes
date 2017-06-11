@@ -141,3 +141,33 @@ Annotations:
 	-	The 'default' profile is enabled by default. Used when no profile is active.
 -	@PropertySource("classpath:/path/to/properties").
 	-	Used with `@Autowired Environment env` the @Bean exposed can use `env.getProperty("<name>")` to access the .properties values.
+
+Resources
+---------
+
+Provide finer grain access to low-level resources
+
+All application contexts implement a ResourceLoader interface - which can be used to obtain Resource instances, such as:
+
+-	UrlResource
+-	ClassPathResource
+-	FileSystemResource
+-	ServletContextResource
+-	InputStreamResource
+-	ByteArrayResource
+
+If no specific prefix is specified, the type of ApplicationContext will determine the returned resource.
+
+```
+Resource template = ctx.getResource("some/resource/path/myTemplate.txt");
+```
+
+Resource type can be deteremined by specifying the prefix:
+
+-	classpath:
+-	file:
+-	http:
+
+### ResourceLoaderAware
+
+Classes can implement the ResourceLoaderAware interface to be supplied with the `ResourceLoader` by the ApplicationContext. However, this can also be autowired in.
