@@ -126,3 +126,20 @@ Configuration
 
 :set autowrite  # write contents of file automatically when :make is called
 ```
+
+Tabs
+----
+
+[http://tedlogan.com/techblog3.html](http://tedlogan.com/techblog3.html)
+
+examples:
+
+```
+:set softtabstop=4 shiftwidth=4 expandtab
+:set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+```
+
+-	tabstop - how many columns a tab counts for.
+-	expandtab / noexpandtab - if set, using Tab in insert mode will produce appropriate number of spaces
+-	shiftwidth - how many columns text is indented with the re-indent operations `\<\< and \>\>`
+-	softtabstop - control how many columns are used when tab is used in insert mode. if softtabstop is less-than tabstop and expandtab is not set, vim will use a combination of tabs and space to make up the desired spacing. if softtabstop equals tabstop and expandtab is not set, vim will always use tabs. When expandtab is set, vim will always use the appropriate number of spaces.
