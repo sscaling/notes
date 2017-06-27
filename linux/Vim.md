@@ -144,6 +144,12 @@ examples:
 -	shiftwidth - how many columns text is indented with the re-indent operations `\<\< and \>\>`
 -	softtabstop - control how many columns are used when tab is used in insert mode. if softtabstop is less-than tabstop and expandtab is not set, vim will use a combination of tabs and space to make up the desired spacing. if softtabstop equals tabstop and expandtab is not set, vim will always use tabs. When expandtab is set, vim will always use the appropriate number of spaces.
 
+*NOTE*: enable visual markers such as
+
+```
+:set list
+```
+
 Spelling
 --------
 
