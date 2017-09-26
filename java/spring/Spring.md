@@ -171,3 +171,8 @@ Resource type can be deteremined by specifying the prefix:
 ### ResourceLoaderAware
 
 Classes can implement the ResourceLoaderAware interface to be supplied with the `ResourceLoader` by the ApplicationContext. However, this can also be autowired in.
+
+XML config
+----------
+
+XML can be used to configure spring beans, however it will be loaded in a different context. If you want to share Java configuraiton with beans instantiated via XML, you will need to define it in an `@Configuration` object and expose it as a `@Bean`. Once you have done this you can import it into your XML using the normal `<bean />` element.

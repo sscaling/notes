@@ -34,3 +34,9 @@ General notes
 -	Web Security - based on chained servlet filters. Filters are managed by Spring boot via @Order annotation, or implement Ordered (Alternatively can be part of FilterReigstrationBean).
 -	Spring Security is one physical filter, but delegates to a chain of internal filters. i.e. could match /foo/\*\* to one filter chain etc.
 -	Spring Actuator (managing endpoints) - when added to an application, you automatically get an additional fitler chain.
+
+Key classes
+-----------
+
+-	HttpSecurity - configure the HTTP security strategies (form/openId/URLs etc)
+-	UserDetailsService - configure the service for your users
