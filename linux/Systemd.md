@@ -39,3 +39,14 @@ sudo systemctl edit <name>.service
 # Edit original
 sudo systemctl edit --full <name>.service
 ```
+
+Create a new unit file
+----------------------
+
+```
+touch /etc/systemd/system/name.service
+chmod 664 /etc/systemd/system/name.service
+** edit **
+systemctl daemon-reload
+systemctl start name.service
+```
