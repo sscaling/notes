@@ -158,3 +158,8 @@ Spelling
 ]s / [s     - move forward / back through spelling mistakes
 z=          - show options
 ```
+
+Extras
+------
+
+-	[Modeline](http://vim.wikia.com/wiki/Modeline_magic) - Specify a comment at top/bottom of document to apply vim specific settings
