@@ -1,7 +1,7 @@
 iptables
 ========
 
-**NOTE:** will generally need `sudo`
+*NOTE:\** will generally need `sudo`
 
 -	`iptables -S` - List rules
 -	`iptables-save -c > /path/to/iptables.rules && iptables -F` - backup iptables and clear
