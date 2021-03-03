@@ -133,7 +133,7 @@ spec:
 
 * Expose resources to external entities, can have different `spec.type` values:
   * `NodePort` - port on node is forwarded to a pod
-  * `ClusterIP` virtual IP for service. Not externall accessible.
+  * `ClusterIP` virtual IP for service. Not externally accessible.
   * `LoadBalancer` - use external infrastructure to handle ingress into k8s cluster. If `LoadBalancer` is not supported then `NodePort` will be used.
 * By default, will load balance traffic across matching pods using a random distribution algorithm
 
@@ -226,6 +226,180 @@ spec:
 
 * `kubectl logs [-f] <pod> [container name]`
 
+## Backup & Restore
+
+* Declarative config can be committed to source-control
+* `kubectl get all --all-namespaces -o yaml` to backup all config
+* Tools such as Arc / Velero can help
+* etcd:
+  * stores all data in the "data dir"
+  * can also take a snapshot of the etcd cluster
+  * when you restore you can create a new data dir (and token) then update the service config and restart
+  * *!Important* stop api-server during restore.
+
+## Storage Drivers
+
+* Storage drivers and volume drivers
+* image layers are read-only
+* container layer filesystem is last layer
+  * this is read-write
+  * uses CoW (Copy-on-Write)
+* in docker create a volume (/var/lib/docker/volumes)
+* can be mounted into a container
+* can mount a host directory into container (e.g. volume-mount or bind-mount)
+* new docker options is `--mount`
+* storage drivers handle behaviours (e.g. aufs, zfs, btrfs, overlay etc)
+* volume driver plugins (e.g. local, flocker, glusterfs)
+
+## Container storage interface
+
+* api for RPC calls
+  * provision/destroy resources
+  * should make the volume available
+
+## K8s volumes
+
+* a pods data is transient
+* can mount a volume into a pod
+* use `spec.containers.volume Mounts[[].mountPath.name`
+* to define volume storage options; `spec.volumes[].name..` `hostPath / awsElasticBlockStore`
+
+## Persistent volumes
+
+* a fixed centralised volume defined by the adminstrator
+* `kind: PersistentVolume`
+
+## Persistent volume claims
+
+* makes storage available to node
+* user created
+* a PVC is bound to a single volume
+* can use labels/selectors
+* 1:1 claim between PV and PVC (can waste resources)
+* `kind: PersistentVolumeClaim`
+* deleting; in the PV define `spec.persistentVolume.ReclaimPolicy...`
+  * retain - PV remains until deleted
+  * delete - PV deleted with PVC
+  * recycle - data is scrubbed then made available for other PVCs
+* in a pod - `spec.volumes[].persistentVolumeClaim.claimName`
+* can be added to `ReplicaSets` or `Deployments`
+* accessModes need to match
+* if more storage available then claimed it is still accessible to the volume
+* can't delete if used by a pod
+
+---
+
+# Security
+
+## Primitives
+
+* Start with a secure host
+* `api-server`
+  * authentication; files, external (LDAP etc), certificates
+  * authorization; RBAC, ABAC, node authorizer, webhooks
+  * TLS encryption for control-plane (certs); `api-server`, `scheduler`, `kubelet` etc
+* use network policies to restrict communication between pods
+
+## Authorization
+
+* users could be; Admins, Devs, Bots, End-users
+  * split into two groups; Humans, Machines
+  * Machines can be managed with **service accounts**
+* Kubernetes only supports **service accounts**
+* auth mechanisms; flat-file, token file, certificates, identity services (LDAP, Kerberos etc)
+  * configured in the `api-server` service
+
+## Authorization mechanisms
+
+* node-authorizer - authorises any requests from `system: node:...` users in the `system:nodes` group
+* ABAC - Attribute Based Access Control
+  * associate user or group with a set of permissions
+  * create policy and restart `api-server`
+* RBAC - Role Based Access Control
+  * create a role defining permissions
+  * assign user/group to that role
+* webhook (e.g. Open Policy Agent)
+  * external service grants or denies access
+* AlwaysAllow / AlwaysDeny
+  * use `--authorization-mode` on `api-server`
+  * can be chained, e.g. Node, RBAC, webhook (on failure forward to next)
+
+### RBAC
+
+* Roles:
+  * `Kind: Role`, `apiVersion: rbac.authorisation.k8s.io/v1`
+  * `kind: RoleBinding`
+  * `kubectl get roles|rolebindings`
+  * `kubectl autho can-i <command>` (e.g. `create deployments`)
+    * `--as <user>` to impersonate user
+* ClusterRoles:
+  * resources are either namespace or cluster scoped
+  * `kind: ClusterRole` (same as `Role`, bind with `ClusterRoleBinding`)
+  * Gives access to resources across all namespaces
+
+## TLS
+
+* `api-server` - TLS enabled
+* etcd server - TLS enabled
+* admins, scheduler, controller-manager, kube-proxy all have cert/keys for mTLS
+* api-server <-> etcd use mTLS
+* api-server <-> kubelet use mTLS
+* generation; esrsa, openssl, cfssl etc
+    * admin-user - `CN` and `OU` have meaning. (`OU=system:master`)
+    * system component certs must be prefixed with `system:`
+* **NOTE:** components may have different CAs
+
+## Certificates API
+
+* Send CSR to `certificates API`
+  * Create CSR k8s object
+   ```
+   Kind: CertificateSigningRequest
+   apiVersion: certificates.k8s.io/v1beta1
+   ```
+   **NOTE:** `spec.request` body must be base64 encoded
+* `kubectl get csr`
+* `kubectl certificate deny|approve <name>`
+  * Once approved certificate is attached to CSR object for retrieval
+* operations managed by the controller-manager (`--cluster-signing-[cert|key]-file`)
+
+## Kubeconfig file
+
+* clusters - different clusters that you have access to (specify hosts, CA etc)
+* users - user accounts which you use (client certificates etc)
+* context - which user config to use for which cluster
+* `kind: Config`
+* `kubectl config view|set context` / `kubectl config use-context`
+
+## API groups
+
+* core @ /api (no `s` at the end)
+* named @ /apis (with `s`)
+  * /apis/apps/v1
+  * /apis/certificates.k8s.io/v1/certificatesigningrequest (Resource after API version)
+
+## Network Policies
+
+* defined with ingress & egress
+* rules - `AllAllow`
+* network policy bound to pod
+  * bound by matching labels
+* `kind: NetworkPolicy`, `spec.policyTypes[]` == ingress / egress
+* network polices are enforced by the network solution used by the k8s cluster
+  * can still create but they will not be enforced
+
+## Image Security
+
+* If no registry specified, it's assumed to be `docker.io`
+* private registry:
+  * `kubectl create secret docker-registry <name> <params>`
+  * add `spec.imagePullSecrets.[]name` to pod
+
+## Contexts
+
+* `pod.spec.SecurityContext` or `pod.spec.containers[].SecurityContext`
+  * `runAsUser` / `capabilites.add`
+
 ---
 
 ## Upgrades
@@ -236,3 +410,27 @@ spec:
   * **uncorden** - marks a node as schedule-able
   * **cordon** - no more pods can be scheduled on node
 * cannot drain if there is a `Pod` without a `ReplicaSet`
+
+## Cluster upgrades
+
+* control plane components can have different versions
+* all versions must be less-than or equal-to `api-server` @ X
+  * controller manager / kube-scheduler X-1
+  * kubelet / kube-proxy X-2
+  * kubectl  X +/- 1
+* recommended to do incremental upgrades (1.10 -> 1.11 -> 1.12 -> 1.13 etc). No jumps!
+  * Process: (*NOTE*: upgrade kubelet on master node before workers)
+    1. Upgrade master (management functions will be down, but running applications continue)
+    2. Upgrade worker nodes
+    3. goto (1)
+* worker nodes can be upgraded with different strategies:
+  * all at once
+  * one-by-one
+  * provision new nodes and decommission old nodes
+
+
+
+
+
+
+
