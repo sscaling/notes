@@ -287,6 +287,85 @@ spec:
 * if more storage available then claimed it is still accessible to the volume
 * can't delete if used by a pod
 
+## Storage classes
+
+* "static provisioning" - Manually provision a physical volume
+* "dynamic provisioning" - Automatic on demand for an application
+* `kind: StorageClass, apiVersion:storage.k8s.io/v1`
+* replaces `PersistentVolume` (these are now automatically created by a provisioner)
+
+## Networking
+
+* Switching - sends packets within the same network
+* Routing - connects two networks together
+  * Gateway used for other devices on the network
+* DNS
+  * A Records - host : ip
+  * AAAA Records: host : IPv6
+  * CNAME Records: host : host
+
+## Network namespaces
+
+* isolated naetwork space per Pod
+* use `ip` tool to create network (veth pair)
+* use a bridge (create veth pair from namespace to bridge)
+
+## Docker networking
+
+* CNI
+  * Defines how plugin should be developed. How to interact with plugins such as 'bridge'
+  * plugins; bridge, vlan, ipvlan, mavclan, windows, IPAM, DCHP, host-local
+  * docker doesn't natively support this
+
+## Cluster networking
+
+* ports:
+  * etcd:2379 (2380 public)
+  * kube-api:6553
+  * kubelet: 10250
+  * kube-scheduler: 10251
+  * kube-controller-manager: 10252
+
+## Pod networking
+
+* each node has bridge network
+* each one has own subnet
+* each pod has own namespace
+* create veth pair per pod<-->bridge
+* attach veth pair
+* assign IP address
+* bring up interface
+* route traffic from source node to node containing target pod (Use routing table or separate routing table in your router)
+* kubelet is configured with `--cni-conf-dir` and `--cni-bin-dir` and `--network-plugin`
+
+## Weave CNI
+
+* Deploys agent on each node
+* create it's own "weave" bridge
+* encapsulates packets
+* can be deployed as a `DaemonSet`
+
+## IP Management
+
+* `/etc/cni/net.d/...` defines IPAM config
+* default is `host-local`
+
+## Service networking
+
+* kube-proxy has predefined range of IPs to assign
+* creates an `iptables` rule (or userland or IPVS)
+  * IPVS - (IP Virtual Server) part of netfilter in the kernel
+* range of IPs specified in api-server params (--service-cluster-ip-range)
+* use DNAT `iptable` rule to forward traffic
+* view kube-proxy logs to see creation
+
+## DNS
+* built in DNS service `kube-dns`
+* DNS names:
+  * `<service name>` short
+  * `<service anme>.<namespace>.<type>.<domain>`
+* pods have IP transposed with dashes (e.g. `1-2-3-4.<namespace>.<pod>.<domain>`)
+
 ---
 
 # Security
